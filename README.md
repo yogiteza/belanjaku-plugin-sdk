@@ -1,6 +1,6 @@
 # @belanjaku/plugin-sdk
 
-SDK for building storefront plugins for [swift-page](../swift-page), the Belanjaku
+SDK for building storefront plugins for [swift-page](https://github.com/icube-id/swift-page), the Belanjaku
 storefront app. A plugin is a small JavaScript bundle that swift-page loads
 with a `<script>` tag and mounts into one of five fixed page slots — this SDK
 gives you the registration boilerplate, an encrypted GraphQL client, and
