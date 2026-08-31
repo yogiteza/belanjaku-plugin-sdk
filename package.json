@@ -1,0 +1,67 @@
+{
+  "name": "@belanjaku/plugin-sdk",
+  "version": "1.0.0",
+  "description": "SDK for building Belanjaku storefront plugins",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.cjs.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rollup -c rollup.config.mjs",
+    "dev": "rollup -c rollup.config.mjs --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint \"src/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.ts\" \"*.md\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"*.md\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run typecheck && npm run lint && npm test && npm run build"
+  },
+  "devDependencies": {
+    "@rollup/plugin-replace": "^5.0.0",
+    "@rollup/plugin-typescript": "^11.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "prettier": "^3.0.0",
+    "rollup": "^3.0.0",
+    "tslib": "^2.8.0",
+    "typescript": "^5.0.0",
+    "vitest": "^0.34.0"
+  },
+  "keywords": [
+    "belanjaku",
+    "plugin",
+    "sdk",
+    "swift-page",
+    "storefront"
+  ],
+  "license": "MIT",
+  "author": "Belanjaku",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yogiteza/belanjaku-plugin-sdk.git"
+  },
+  "homepage": "https://github.com/yogiteza/belanjaku-plugin-sdk#readme",
+  "bugs": {
+    "url": "https://github.com/yogiteza/belanjaku-plugin-sdk/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}

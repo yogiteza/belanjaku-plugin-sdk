@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plugin Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --paper:#F6F4EC;
+    --surface:#FFFFFF;
+    --ink:#1B2233;
+    --ink-soft:#565F76;
+    --line:#DAD4C2;
+    --accent:#B96A28;
+    --accent-ink:#7A4A1D;
+    --data:#2E7D74;
+    --data-soft:#DCEBE8;
+    --no:#AD4B3E;
+    --no-soft:#F3DFDA;
+    --code-bg:#EFEAD9;
+    --shadow: 0 1px 0 rgba(27,34,51,0.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#10131C;
+      --surface:#171C29;
+      --ink:#ECE7DB;
+      --ink-soft:#A7AEC3;
+      --line:#2B3142;
+      --accent:#E0924D;
+      --accent-ink:#F2B87F;
+      --data:#57B0A4;
+      --data-soft:#173330;
+      --no:#DC8577;
+      --no-soft:#3A211E;
+      --code-bg:#1C2231;
+      --shadow: 0 1px 0 rgba(0,0,0,0.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#10131C;
+    --surface:#171C29;
+    --ink:#ECE7DB;
+    --ink-soft:#A7AEC3;
+    --line:#2B3142;
+    --accent:#E0924D;
+    --accent-ink:#F2B87F;
+    --data:#57B0A4;
+    --data-soft:#173330;
+    --no:#DC8577;
+    --no-soft:#3A211E;
+    --code-bg:#1C2231;
+    --shadow: 0 1px 0 rgba(0,0,0,0.4);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    font-size:16px;
+    line-height:1.55;
+  }
+  ::selection{ background:var(--accent); color:var(--paper); }
+
+  h1,h2,h3{
+    font-family:"Big Shoulders Display","IBM Plex Sans",sans-serif;
+    font-weight:700;
+    letter-spacing:0.01em;
+    text-wrap:balance;
+    margin:0;
+    color:var(--ink);
+  }
+  code, .mono{
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+  }
+  code{
+    background:var(--code-bg);
+    padding:0.12em 0.42em;
+    border-radius:5px;
+    font-size:0.88em;
+  }
+
+  .wrap{
+    max-width:880px;
+    margin:0 auto;
+    padding:56px 24px 96px;
+  }
+
+  /* ---- header ---- */
+  header{
+    display:flex;
+    flex-direction:column;
+    gap:22px;
+    padding-bottom:40px;
+    margin-bottom:48px;
+    border-bottom:1px solid var(--line);
+  }
+  .eyebrow{
+    font-family:"IBM Plex Mono";
+    font-size:12.5px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--accent-ink);
+  }
+  h1{
+    font-size:clamp(2.4rem, 6vw, 3.6rem);
+    line-height:0.98;
+  }
+  .thesis{
+    font-size:1.15rem;
+    color:var(--ink-soft);
+    max-width:60ch;
+  }
+  .thesis b{ color:var(--ink); font-weight:600; }
+
+  nav.jump{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:6px;
+  }
+  nav.jump a{
+    font-family:"IBM Plex Mono";
+    font-size:12.5px;
+    text-decoration:none;
+    color:var(--ink-soft);
+    border:1px solid var(--line);
+    background:var(--surface);
+    padding:6px 12px;
+    border-radius:999px;
+    transition:border-color .15s ease, color .15s ease;
+  }
+  nav.jump a:hover, nav.jump a:focus-visible{
+    border-color:var(--accent);
+    color:var(--accent-ink);
+    outline:none;
+  }
+
+  /* ---- sections ---- */
+  section{
+    margin-bottom:64px;
+    scroll-margin-top:28px;
+  }
+  section:last-of-type{ margin-bottom:0; }
+
+  .section-head{
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+    margin-bottom:6px;
+  }
+  .section-num{
+    font-family:"IBM Plex Mono";
+    font-size:13px;
+    color:var(--accent-ink);
+  }
+  h2{
+    font-size:clamp(1.5rem, 3.2vw, 1.9rem);
+  }
+  .section-sub{
+    color:var(--ink-soft);
+    max-width:62ch;
+    margin:10px 0 26px;
+  }
+
+  figure{ margin:0; }
+  .panel{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:22px 22px 16px;
+    box-shadow:var(--shadow);
+    overflow-x:auto;
+  }
+  .panel svg{ display:block; width:100%; height:auto; min-width:520px; }
+  figcaption{
+    font-family:"IBM Plex Mono";
+    font-size:12.5px;
+    color:var(--ink-soft);
+    padding-top:12px;
+    text-align:center;
+  }
+
+  /* ---- capability / manifest card grid ---- */
+  .cap-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+    margin-top:22px;
+  }
+  @media (max-width:620px){ .cap-grid{ grid-template-columns:1fr; } }
+  .cap-col-head{
+    font-family:"IBM Plex Mono";
+    font-size:12px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    padding:2px 4px 10px;
+  }
+  .cap-col-head.yes{ color:var(--data); }
+  .cap-col-head.no{ color:var(--no); }
+  .cap-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-left:3px solid var(--data);
+    border-radius:8px;
+    padding:13px 15px;
+    margin-bottom:10px;
+    font-size:0.95rem;
+  }
+  .cap-card.no{ border-left-color:var(--no); }
+  .cap-card.neutral{ border-left-color:var(--accent); }
+  .cap-card.flat{ margin-bottom:0; }
+  .cap-card b{ display:block; font-weight:600; margin-bottom:2px; }
+  .cap-card b.mono{ font-family:"IBM Plex Mono"; font-weight:500; font-size:0.92em; color:var(--accent-ink); }
+  .cap-card span{ color:var(--ink-soft); font-size:0.9em; }
+
+  .note{
+    font-family:"IBM Plex Mono";
+    font-size:13px;
+    color:var(--ink-soft);
+    background:var(--data-soft);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:12px 16px;
+    margin-top:18px;
+  }
+  .note b{ color:var(--ink); }
+
+  footer{
+    margin-top:70px;
+    padding-top:24px;
+    border-top:1px solid var(--line);
+    font-family:"IBM Plex Mono";
+    font-size:12.5px;
+    color:var(--ink-soft);
+  }
+
+  /* svg helpers */
+  .lbl{ font-family:"IBM Plex Sans"; font-size:13px; fill:var(--ink); }
+  .lbl-b{ font-family:"IBM Plex Sans"; font-size:13px; font-weight:600; fill:var(--ink); }
+  .cap{ font-family:"IBM Plex Mono"; font-size:10.5px; fill:var(--ink-soft); }
+  .arrow-lbl{ font-family:"IBM Plex Mono"; font-size:11px; fill:var(--ink-soft); }
+  .box{ fill:var(--surface); stroke:var(--ink); stroke-opacity:0.55; stroke-width:1.4; }
+  .box-accent{ fill:var(--surface); stroke:var(--accent); stroke-width:1.8; }
+  .box-data{ fill:var(--surface); stroke:var(--data); stroke-width:1.8; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <span class="eyebrow">Belanjaku · Contributor Orientation</span>
+    <h1>Plugin Field Guide</h1>
+    <p class="thesis">
+      A plugin is code you upload <b>once</b>, then install as one or more <b>instances</b>
+      into fixed spots across the storefront. Each instance talks back to Belanjaku through
+      exactly <b>two guarded doors</b>. Seven pictures below cover the whole mechanism.
+    </p>
+    <nav class="jump">
+      <a href="#big-picture">1 · Big picture</a>
+      <a href="#model">2 · Plugin vs. instance</a>
+      <a href="#manifest">3 · manifest.json</a>
+      <a href="#workflow">4 · Your workflow</a>
+      <a href="#capability">5 · Where it renders</a>
+      <a href="#ui">6 · Adding a UI</a>
+      <a href="#data">7 · Data &amp; GraphQL</a>
+    </nav>
+  </header>
+
+  <!-- ============ 1. BIG PICTURE ============ -->
+  <section id="big-picture">
+    <div class="section-head">
+      <span class="section-num">01</span>
+      <h2>The big picture</h2>
+    </div>
+    <p class="section-sub">
+      Four parties, one narrow data pipe. You build code and hand it off; someone else
+      decides where it's installed; the storefront does the rendering.
+    </p>
+
+    <figure class="panel">
+      <svg viewBox="0 0 960 310" role="img" aria-label="You build a bundle and upload it to Plugin Service. Separately, a seller or admin installs an instance of it, also via Plugin Service. Plugin Service hands the resulting instance list and entry URL to swift-page, which mounts it for the shopper. A dashed data channel loops back from swift-page to Plugin Service for reads and writes at runtime.">
+        <defs>
+          <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--ink)" fill-opacity="0.55"/>
+          </marker>
+          <marker id="a1d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--data)"/>
+          </marker>
+        </defs>
+
+        <!-- top row: you build -->
+        <rect class="box-accent" x="20" y="30" width="120" height="60" rx="9"/>
+        <text class="lbl-b" x="80" y="58" text-anchor="middle">You</text>
+        <text class="cap" x="80" y="76" text-anchor="middle">write the plugin</text>
+
+        <rect class="box" x="190" y="30" width="150" height="60" rx="9"/>
+        <text class="lbl-b" x="265" y="58" text-anchor="middle">Bundle</text>
+        <text class="cap" x="265" y="76" text-anchor="middle">index.js + manifest.json</text>
+
+        <line x1="140" y1="60" x2="187" y2="60" stroke="var(--ink)" stroke-opacity="0.55" stroke-width="1.4" marker-end="url(#a1)"/>
+        <text class="arrow-lbl" x="165" y="46" text-anchor="middle">build</text>
+
+        <!-- bottom row: someone installs it -->
+        <rect class="box" x="20" y="230" width="170" height="60" rx="9"/>
+        <text class="lbl-b" x="105" y="258" text-anchor="middle">Seller / Admin</text>
+        <text class="cap" x="105" y="276" text-anchor="middle">installs an instance</text>
+
+        <!-- hub -->
+        <rect class="box" x="400" y="110" width="180" height="100" rx="10"/>
+        <text class="lbl-b" x="490" y="155" text-anchor="middle">Plugin Service</text>
+        <text class="cap" x="490" y="173" text-anchor="middle">plugin code + instances</text>
+
+        <polyline points="265,90 265,140 397,140" fill="none" stroke="var(--ink)" stroke-opacity="0.55" stroke-width="1.4" marker-end="url(#a1)"/>
+        <text class="arrow-lbl" x="331" y="128" text-anchor="middle">upload</text>
+
+        <polyline points="105,230 105,190 397,190" fill="none" stroke="var(--ink)" stroke-opacity="0.55" stroke-width="1.4" marker-end="url(#a1)"/>
+        <text class="arrow-lbl" x="251" y="178" text-anchor="middle">configure</text>
+
+        <!-- output -->
+        <rect class="box" x="640" y="130" width="140" height="60" rx="9"/>
+        <text class="lbl-b" x="710" y="158" text-anchor="middle">swift-page</text>
+        <text class="cap" x="710" y="176" text-anchor="middle">the storefront app</text>
+
+        <line x1="580" y1="160" x2="637" y2="160" stroke="var(--ink)" stroke-opacity="0.55" stroke-width="1.4" marker-end="url(#a1)"/>
+        <text class="arrow-lbl" x="608" y="100" text-anchor="middle">serves</text>
+
+        <rect class="box-data" x="820" y="130" width="120" height="60" rx="9"/>
+        <text class="lbl-b" x="880" y="158" text-anchor="middle">Shopper</text>
+        <text class="cap" x="880" y="176" text-anchor="middle">sees your widget</text>
+
+        <line x1="780" y1="160" x2="817" y2="160" stroke="var(--ink)" stroke-opacity="0.55" stroke-width="1.4" marker-end="url(#a1)"/>
+        <text class="arrow-lbl" x="798" y="100" text-anchor="middle">mounts</text>
+
+        <!-- return data loop -->
+        <path d="M 710 190 C 710 250, 490 250, 490 210" fill="none" stroke="var(--data)" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#a1d)"/>
+        <text class="arrow-lbl" x="600" y="262" text-anchor="middle" fill="var(--data)">reads / writes plugin data — encrypted, at runtime</text>
+      </svg>
+      <figcaption>Uploading and installing are two separate actions — a plugin can sit uploaded and unused until someone places it.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ 2. PLUGIN vs INSTANCE ============ -->
+  <section id="model">
+    <div class="section-head">
+      <span class="section-num">02</span>
+      <h2>One plugin, many instances</h2>
+    </div>
+    <p class="section-sub">
+      You write and version the code once. It gets <em>installed</em> as many independent
+      instances — different sellers, different slots, different scopes — each configured on its own.
+    </p>
+
+    <figure class="panel">
+      <svg viewBox="0 0 900 300" role="img" aria-label="Your Plugin, one versioned codebase, fans out into three independent instances: Instance A for Seller X in the below-title slot at product scope, Instance B for Seller Y in the before-sort slot at store scope, and Instance C for Seller X in the below-description slot at all_product_pages scope.">
+        <defs>
+          <marker id="a2f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--ink)" fill-opacity="0.55"/>
+          </marker>
+        </defs>
+
+        <rect class="box-accent" x="30" y="110" width="190" height="80" rx="10"/>
+        <text class="lbl-b" x="125" y="145" text-anchor="middle">Your Plugin</text>
+        <text class="cap" x="125" y="162" text-anchor="middle">code, versioned</text>
+        <text class="cap" x="125" y="176" text-anchor="middle">1.0.0 → 1.1.0 → …</text>
+
+        <line x1="220" y1="150" x2="417" y2="55" stroke="var(--ink)" stroke-opacity="0.55" stroke-width="1.4" marker-end="url(#a2f)"/>
+        <line x1="220" y1="150" x2="417" y2="150" stroke="var(--ink)" stroke-opacity="0.55" stroke-width="1.4" marker-end="url(#a2f)"/>
+        <line x1="220" y1="150" x2="417" y2="245" stroke="var(--ink)" stroke-opacity="0.55" stroke-width="1.4" marker-end="url(#a2f)"/>
+
+        <rect class="box-data" x="420" y="20" width="280" height="70" rx="9"/>
+        <text class="lbl-b" x="560" y="48" text-anchor="middle">Instance A</text>
+        <text class="cap" x="560" y="64" text-anchor="middle">Seller X · productDetailBelowTitle</text>
+        <text class="cap" x="560" y="78" text-anchor="middle">scope: product</text>
+
+        <rect class="box-data" x="420" y="115" width="280" height="70" rx="9"/>
+        <text class="lbl-b" x="560" y="143" text-anchor="middle">Instance B</text>
+        <text class="cap" x="560" y="159" text-anchor="middle">Seller Y · etalaseBeforeSort</text>
+        <text class="cap" x="560" y="173" text-anchor="middle">scope: store</text>
+
+        <rect class="box-data" x="420" y="210" width="280" height="70" rx="9"/>
+        <text class="lbl-b" x="560" y="238" text-anchor="middle">Instance C</text>
+        <text class="cap" x="560" y="254" text-anchor="middle">Seller X · productDetailBelowDescription</text>
+        <text class="cap" x="560" y="268" text-anchor="middle">scope: all_product_pages</text>
+      </svg>
+      <figcaption>Same one runtime_key, three installs — each with its own seller, slot, and scope.</figcaption>
+    </figure>
+
+    <div class="note">
+      <b>Override rule:</b> a <code>product</code>-scoped instance always wins over an
+      <code>all_product_pages</code> one for that exact SKU — Instance C above would be
+      skipped on any product page where a more specific instance also exists.
+    </div>
+  </section>
+
+  <!-- ============ 3. MANIFEST ============ -->
+  <section id="manifest">
+    <div class="section-head">
+      <span class="section-num">03</span>
+      <h2>manifest.json, at a glance</h2>
+    </div>
+    <p class="section-sub">
+      Every upload needs exactly one of these. It's not read by your code at runtime — it's
+      read once, by the upload service, to validate and describe what you're shipping.
+    </p>
+
+    <div class="cap-grid">
+      <div class="cap-card neutral flat">
+        <b class="mono">runtime_key · name · version · entry</b>
+        <span>Identity — <code>runtime_key</code> must match the string you pass to <code>createPlugin()</code></span>
+      </div>
+      <div class="cap-card neutral flat">
+        <b class="mono">props_schema</b>
+        <span>Config a seller can set per install — becomes the props your setup() reads</span>
+      </div>
+      <div class="cap-card neutral flat">
+        <b class="mono">data_schema</b>
+        <span>Shape of the data your plugin is allowed to submit — validated server-side</span>
+      </div>
+      <div class="cap-card neutral flat">
+        <b class="mono">rules_schema</b>
+        <span>Which slots it may go into, and who can add / edit / delete submitted data</span>
+      </div>
+    </div>
+
+    <div class="note">
+      Full field-by-field reference: <code>docs/manifest.md</code>
+    </div>
+  </section>
+
+  <!-- ============ 4. WORKFLOW ============ -->
+  <section id="workflow">
+    <div class="section-head">
+      <span class="section-num">04</span>
+      <h2>Your workflow, locally</h2>
+    </div>
+    <p class="section-sub">
+      Six steps, start to finish. The only unusual one is <b>#4</b> — there's no live-reload
+      storefront to test against, so you fake the host yourself in a blank page.
+    </p>
+
+    <figure class="panel">
+      <svg viewBox="0 0 720 470" role="img" aria-label="Six-step workflow: install the SDK, write manifest and index.js, build to an IIFE bundle, test locally by hand, zip and upload, install the instance to a seller, slot, and scope.">
+        <line x1="46" y1="36" x2="46" y2="424" stroke="var(--line)" stroke-width="2"/>
+
+        <!-- step template: circle at (46,y), text starts x=80 -->
+        <g>
+          <circle cx="46" cy="40" r="15" class="box-accent"/>
+          <text class="lbl-b" x="46" y="45" text-anchor="middle" fill="var(--accent-ink)">1</text>
+          <text class="lbl-b" x="80" y="34">Install the SDK</text>
+          <text class="cap" x="80" y="52">npm install @belanjaku/plugin-sdk — or link it locally with a file: path while it's unpublished</text>
+        </g>
+
+        <g>
+          <circle cx="46" cy="118" r="15" class="box-accent"/>
+          <text class="lbl-b" x="46" y="123" text-anchor="middle" fill="var(--accent-ink)">2</text>
+          <text class="lbl-b" x="80" y="112">Write the plugin</text>
+          <text class="cap" x="80" y="130">manifest.json describes it · index.js calls createPlugin()</text>
+        </g>
+
+        <g>
+          <circle cx="46" cy="196" r="15" class="box-accent"/>
+          <text class="lbl-b" x="46" y="201" text-anchor="middle" fill="var(--accent-ink)">3</text>
+          <text class="lbl-b" x="80" y="190">Build</text>
+          <text class="cap" x="80" y="208">bundle everything into one .js file — an IIFE, never an ES module</text>
+        </g>
+
+        <g>
+          <circle cx="46" cy="274" r="15" class="box-data" stroke="var(--data)"/>
+          <text class="lbl-b" x="46" y="279" text-anchor="middle" fill="var(--data)">4</text>
+          <text class="lbl-b" x="80" y="264">Test it yourself</text>
+          <text class="cap" x="80" y="282">open a blank HTML page, load the bundle, call the mount</text>
+          <text class="cap" x="80" y="296">function by hand with fake props — no real host needed</text>
+        </g>
+
+        <g>
+          <circle cx="46" cy="352" r="15" class="box-accent"/>
+          <text class="lbl-b" x="46" y="357" text-anchor="middle" fill="var(--accent-ink)">5</text>
+          <text class="lbl-b" x="80" y="346">Zip &amp; upload</text>
+          <text class="cap" x="80" y="364">dist/ (manifest + bundle) → Plugin Service admin</text>
+        </g>
+
+        <g>
+          <circle cx="46" cy="424" r="15" class="box-accent"/>
+          <text class="lbl-b" x="46" y="429" text-anchor="middle" fill="var(--accent-ink)">6</text>
+          <text class="lbl-b" x="80" y="418">Install an instance</text>
+          <text class="cap" x="80" y="436">pick a seller, a slot, and a scope — now it's live (see §2)</text>
+        </g>
+      </svg>
+      <figcaption>Step 4 is the whole local dev loop: no staging swift-page required to see your widget run.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ 5. CAPABILITY ============ -->
+  <section id="capability">
+    <div class="section-head">
+      <span class="section-num">05</span>
+      <h2>Where it renders, and what it can do</h2>
+    </div>
+    <p class="section-sub">
+      Not "anywhere." A plugin only ever gets an empty box in one of a handful of fixed spots —
+      never a new spot of its own.
+    </p>
+
+    <figure class="panel">
+      <svg viewBox="0 0 900 300" role="img" aria-label="Three page types with their fixed plugin slots: the product page has below-title, right-of-title, and below-description slots; the listing page has a before-sort slot; the landing page has one floating slot.">
+        <!-- Product page frame -->
+        <g>
+          <rect x="20" y="20" width="270" height="260" rx="8" class="box"/>
+          <text class="cap" x="155" y="42" text-anchor="middle" fill="var(--ink-soft)">PRODUCT PAGE</text>
+
+          <rect x="36" y="54" width="238" height="16" rx="3" fill="var(--ink)" fill-opacity="0.12"/>
+          <rect x="36" y="78" width="150" height="34" rx="6" class="box-accent"/>
+          <text class="cap" x="111" y="99" text-anchor="middle" fill="var(--accent-ink)">below title</text>
+          <rect x="194" y="78" width="80" height="34" rx="6" class="box-accent"/>
+          <text class="cap" x="234" y="99" text-anchor="middle" fill="var(--accent-ink)">beside title</text>
+
+          <rect x="36" y="126" width="238" height="60" rx="3" fill="var(--ink)" fill-opacity="0.08"/>
+          <rect x="36" y="196" width="238" height="34" rx="6" class="box-accent"/>
+          <text class="cap" x="155" y="217" text-anchor="middle" fill="var(--accent-ink)">below description</text>
+
+          <rect x="36" y="240" width="238" height="24" rx="3" fill="var(--ink)" fill-opacity="0.08"/>
+        </g>
+
+        <!-- Listing page frame -->
+        <g>
+          <rect x="315" y="20" width="270" height="260" rx="8" class="box"/>
+          <text class="cap" x="450" y="42" text-anchor="middle" fill="var(--ink-soft)">LISTING PAGE</text>
+
+          <rect x="331" y="54" width="238" height="16" rx="3" fill="var(--ink)" fill-opacity="0.12"/>
+          <rect x="331" y="78" width="238" height="30" rx="6" class="box-accent"/>
+          <text class="cap" x="450" y="97" text-anchor="middle" fill="var(--accent-ink)">before sort control</text>
+
+          <rect x="331" y="118" width="112" height="150" rx="3" fill="var(--ink)" fill-opacity="0.08"/>
+          <rect x="457" y="118" width="112" height="150" rx="3" fill="var(--ink)" fill-opacity="0.08"/>
+        </g>
+
+        <!-- Landing page frame -->
+        <g>
+          <rect x="610" y="20" width="270" height="260" rx="8" class="box"/>
+          <text class="cap" x="745" y="42" text-anchor="middle" fill="var(--ink-soft)">LANDING PAGE</text>
+
+          <rect x="626" y="54" width="238" height="196" rx="3" fill="var(--ink)" fill-opacity="0.08"/>
+          <rect x="742" y="212" width="106" height="60" rx="6" class="box-accent"/>
+          <text class="cap" x="795" y="238" text-anchor="middle" fill="var(--accent-ink)">floating</text>
+          <text class="cap" x="795" y="250" text-anchor="middle" fill="var(--accent-ink)">widget</text>
+        </g>
+      </svg>
+      <figcaption>Five slots total, across three page types. That's the entire set — adding a sixth needs a swift-page code change, not a plugin.</figcaption>
+    </figure>
+
+    <div class="cap-grid">
+      <div>
+        <div class="cap-col-head yes">Can</div>
+        <div class="cap-card">
+          <b>Render into its slot</b>
+          <span>full control of that one box — plain DOM, React, whatever you like</span>
+        </div>
+        <div class="cap-card">
+          <b>Read public data</b>
+          <span>anything approved &amp; submitted before, for the scope it asks for</span>
+        </div>
+        <div class="cap-card">
+          <b>Submit new data</b>
+          <span>reviews, ratings, anything — tied to a product, store, or the whole tenant</span>
+        </div>
+        <div class="cap-card">
+          <b>Call two GraphQL doors</b>
+          <span>a guarded read and a guarded write — nothing else is reachable</span>
+        </div>
+      </div>
+      <div>
+        <div class="cap-col-head no">Can't</div>
+        <div class="cap-card no">
+          <b>Create a new slot</b>
+          <span>the five spots are fixed in swift-page's own code</span>
+        </div>
+        <div class="cap-card no">
+          <b>Query arbitrary GraphQL</b>
+          <span>no seller/contributor operations — only the two public, tenant-scoped ones</span>
+        </div>
+        <div class="cap-card no">
+          <b>Run on the server</b>
+          <span>browser-only — there's no server-side render step for plugins</span>
+        </div>
+        <div class="cap-card no">
+          <b>Skip cleanup for free</b>
+          <span>you must return a destroy() or you leak listeners on every re-mount</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 6. ADDING A UI ============ -->
+  <section id="ui">
+    <div class="section-head">
+      <span class="section-num">06</span>
+      <h2>Adding a UI, concretely</h2>
+    </div>
+    <p class="section-sub">
+      The host's whole job is handing you an empty <code>&lt;div&gt;</code>. Everything inside
+      it is yours — the SDK just wires the handoff and the cleanup.
+    </p>
+
+    <figure class="panel">
+      <svg viewBox="0 0 820 190" role="img" aria-label="swift-page hands your setup function an empty container, you fill it with whatever UI you want, it becomes visible on the page, and when the plugin is removed swift-page calls your destroy function to clean up.">
+        <defs>
+          <marker id="a4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--ink)" fill-opacity="0.55"/>
+          </marker>
+          <marker id="a4d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--no)"/>
+          </marker>
+        </defs>
+
+        <rect class="box" x="20" y="40" width="150" height="60" rx="9"/>
+        <text class="lbl-b" x="95" y="66" text-anchor="middle">swift-page</text>
+        <text class="cap" x="95" y="82" text-anchor="middle">gives you a &lt;div&gt;</text>
+
+        <rect class="box-accent" x="230" y="40" width="180" height="60" rx="9"/>
+        <text class="lbl-b" x="320" y="66" text-anchor="middle">setup(props, el)</text>
+        <text class="cap" x="320" y="82" text-anchor="middle">yours — DOM, React, etc.</text>
+
+        <rect class="box-data" x="470" y="40" width="150" height="60" rx="9"/>
+        <text class="lbl-b" x="545" y="66" text-anchor="middle">On screen</text>
+        <text class="cap" x="545" y="82" text-anchor="middle">shopper sees it</text>
+
+        <line x1="170" y1="70" x2="227" y2="70" stroke="var(--ink)" stroke-opacity="0.55" stroke-width="1.4" marker-end="url(#a4)"/>
+        <line x1="410" y1="70" x2="467" y2="70" stroke="var(--ink)" stroke-opacity="0.55" stroke-width="1.4" marker-end="url(#a4)"/>
+
+        <path d="M 545 100 C 545 150, 320 150, 320 103" fill="none" stroke="var(--no)" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#a4d)"/>
+        <text class="arrow-lbl" x="430" y="164" text-anchor="middle" fill="var(--no)">on removal: swift-page calls destroy() — you tear it down</text>
+      </svg>
+      <figcaption>Return a cleanup function from setup() — sync or async, the SDK waits for it either way.</figcaption>
+    </figure>
+
+    <div class="note">
+      <b>Styling:</b> the host hands you a <code>theme</code> object (text color, button color, radius, font)
+      pulled from the storefront's own theme, so your widget can match the page it's sitting in without hardcoding colors.
+    </div>
+  </section>
+
+  <!-- ============ 7. DATA & GRAPHQL ============ -->
+  <section id="data">
+    <div class="section-head">
+      <span class="section-num">07</span>
+      <h2>Data &amp; GraphQL, clarified</h2>
+    </div>
+    <p class="section-sub">
+      One pipe, two directions. Nothing else is reachable — a plugin never talks to
+      Plugin Service directly, and never sees the full GraphQL API.
+    </p>
+
+    <figure class="panel">
+      <svg viewBox="0 0 900 260" role="img" aria-label="Write direction: your widget calls submitPluginData, the request is encrypted, swift-page's proxy decrypts and forwards it, Plugin Service checks the tenant and scope, then stores it in the database. Read direction runs the same pipe in reverse with getPublicPluginData, returning plain JSON, no encryption needed on the way back.">
+        <defs>
+          <marker id="a5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/>
+          </marker>
+          <marker id="a5r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--data)"/>
+          </marker>
+        </defs>
+
+        <g>
+          <rect class="box" x="20" y="90" width="150" height="60" rx="9"/>
+          <text class="lbl-b" x="95" y="116" text-anchor="middle">Your widget</text>
+          <text class="cap" x="95" y="132" text-anchor="middle">in the browser</text>
+        </g>
+        <g>
+          <rect class="box" x="245" y="90" width="170" height="60" rx="9"/>
+          <text class="lbl-b" x="330" y="112" text-anchor="middle">swift-page proxy</text>
+          <text class="cap" x="330" y="128" text-anchor="middle">decrypts the payload</text>
+          <text class="cap" x="330" y="140" text-anchor="middle">forwards it, same-origin</text>
+        </g>
+        <g>
+          <rect class="box" x="490" y="90" width="180" height="60" rx="9"/>
+          <text class="lbl-b" x="580" y="112" text-anchor="middle">Plugin Service</text>
+          <text class="cap" x="580" y="128" text-anchor="middle">checks tenant + scope,</text>
+          <text class="cap" x="580" y="140" text-anchor="middle">only then touches data</text>
+        </g>
+        <g>
+          <rect class="box-data" x="745" y="90" width="135" height="60" rx="9"/>
+          <text class="lbl-b" x="812" y="116" text-anchor="middle">Database</text>
+          <text class="cap" x="812" y="132" text-anchor="middle">your submitted data</text>
+        </g>
+
+        <!-- write, top -->
+        <line x1="95" y1="86" x2="95" y2="60" stroke="var(--accent)" stroke-width="1.6"/>
+        <line x1="95" y1="60" x2="812" y2="60" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#a5)"/>
+        <line x1="812" y1="60" x2="812" y2="86" stroke="var(--accent)" stroke-width="1.6"/>
+        <text class="arrow-lbl" x="450" y="46" text-anchor="middle" fill="var(--accent)">WRITE · submitPluginData() — variables encrypted before they leave the browser</text>
+
+        <!-- read, bottom -->
+        <line x1="812" y1="154" x2="812" y2="200" stroke="var(--data)" stroke-width="1.6"/>
+        <line x1="812" y1="200" x2="95" y2="200" stroke="var(--data)" stroke-width="1.6" marker-end="url(#a5r)"/>
+        <line x1="95" y1="200" x2="95" y2="154" stroke="var(--data)" stroke-width="1.6"/>
+        <text class="arrow-lbl" x="450" y="216" text-anchor="middle" fill="var(--data)">READ · getPublicPluginData() — comes back as plain JSON, already public</text>
+      </svg>
+      <figcaption>Same four stations, opposite directions. Encryption only guards the write on its way in — it's tamper-resistance, not secrecy.</figcaption>
+    </figure>
+
+    <div class="note">
+      <b>Scope is the key concept:</b> every record is tagged <code>product</code>, <code>store</code>,
+      or <code>global</code>. Write under one, read back under the exact same one — a review saved as
+      <code>product</code> won't show up if you ask for <code>store</code>.
+    </div>
+  </section>
+
+  <footer>
+    Belanjaku Plugin SDK · this page explains the mechanism only — see the SDK's own docs/ folder for API signatures.
+  </footer>
+
+</div>
+</body>
+</html>

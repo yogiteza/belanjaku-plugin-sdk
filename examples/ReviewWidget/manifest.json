@@ -1,0 +1,60 @@
+{
+  "runtime_key": "ReviewWidget",
+  "name": "Review Widget",
+  "version": "1.0.0",
+  "description": "Product review plugin built with @belanjaku/plugin-sdk. Shows a rating summary and a customer review form.",
+  "entry": "index.js",
+  "props_schema": {
+    "slot": {
+      "type": "string",
+      "default": "summary",
+      "description": "\"summary\" = rating summary (place in productDetailBelowTitle); \"comments\" = review list + form (place in productDetailBelowDescription)"
+    }
+  },
+  "data_schema": {
+    "rating": {
+      "type": "number",
+      "label": "Rating",
+      "required": true,
+      "table": { "visible": true, "sortable": true },
+      "form": "TextField"
+    },
+    "name": {
+      "type": "string",
+      "label": "Reviewer name",
+      "required": true,
+      "table": { "visible": true },
+      "form": "TextField"
+    },
+    "comment": {
+      "type": "string",
+      "label": "Review",
+      "required": true,
+      "table": { "visible": true },
+      "form": "TextField"
+    }
+  },
+  "rules_schema": {
+    "placements_available": {
+      "productDetailBelowTitle": ["product", "all_product_pages"],
+      "productDetailBelowDescription": ["product", "all_product_pages"]
+    },
+    "plugin_data": {
+      "config_seller": {
+        "show_data": true,
+        "action_data": {
+          "action_add": false,
+          "action_edit": false,
+          "action_delete": true
+        }
+      },
+      "config_customer": {
+        "show_data": true,
+        "action_data": {
+          "action_add": true,
+          "action_delete": false
+        }
+      }
+    }
+  }
+}

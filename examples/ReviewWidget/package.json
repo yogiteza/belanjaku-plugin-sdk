@@ -1,0 +1,15 @@
+{
+  "name": "review-widget-example",
+  "private": true,
+  "version": "1.0.0",
+  "description": "ReviewWidget — reference plugin built with @belanjaku/plugin-sdk",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "dependencies": {
+    "@belanjaku/plugin-sdk": "file:../.."
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0"
+  }
+}
